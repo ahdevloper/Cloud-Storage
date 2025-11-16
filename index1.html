@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>نماذج متعددة لرفع الملفات – Upload UI</title>
+
+<style>
+    body {
+        background:#f0f2f5;
+        font-family:"Tajawal", sans-serif;
+        padding: 30px;
+    }
+
+    h2 { margin-bottom: 10px; }
+    .section { margin-bottom: 50px; }
+
+    /* ---------- الشكل 1: Modern Card ---------- */
+    .card-upload {
+        width: 350px;
+        padding:25px;
+        background:#fff;
+        border-radius:18px;
+        text-align:center;
+        box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    }
+    .card-upload .box {
+        padding:20px;
+        border:2px dashed #aaa;
+        border-radius:15px;
+        cursor:pointer;
+        transition:0.3s;
+    }
+    .card-upload .box:hover {
+        border-color:#4A90E2;
+        background:#f7fbff;
+    }
+    .progress-bar-1 { display:none; width:100%; background:#eee; height:10px; border-radius:10px; margin-top:15px; }
+    .progress-1 { height:100%; width:0; background:#4A90E2; }
+
+    /* ---------- الشكل 2: Classic Minimal ---------- */
+    .classic-upload {
+        background:#fff;
+        padding:20px;
+        width:300px;
+        border-radius:10px;
+        border:1px solid #ddd;
+        text-align:center;
+    }
+    .classic-upload input {
+        margin-top:10px;
+    }
+
+    /* ---------- الشكل 3: Full Width Bar ---------- */
+    .bar-upload {
+        background:#fff;
+        padding:20px;
+        border-radius:12px;
+        box-shadow:0 5px 20px rgba(0,0,0,0.07);
+        width:600px;
+    }
+    .upload-btn {
+        background:#4A90E2;
+        padding:12px 25px;
+        color:#fff;
+        border:none;
+        border-radius:10px;
+        cursor:pointer;
+        font-size:15px;
+        transition:0.2s;
+    }
+    .upload-btn:hover { background:#3577c4; }
+    .progress-bar-2 { display:none; width:100%; background:#ddd; height:12px; border-radius:6px; margin-top:15px; }
+    .progress-2 { height:100%; width:0; background:#4A90E2; }
+
+    /* ---------- الشكل 4: Mini Button ---------- */
+    .mini-upload button {
+        padding:10px 18px;
+        background:#222;
+        color:#fff;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        transition:0.2s;
+    }
+    .mini-upload button:hover { background:#000; }
+
+</style>
+
+</head>
+<body>
+
+<h1>نماذج متعددة لرفع الملفات</h1>
+<p>اختر الشكل الذي يناسب موقعك – جميعها تعمل بنفس API.</p>
+
+
+<!-- ------------------------------------------------------------- -->
+<!--  الشكل 1: Modern Card Upload -->
+<!-- ------------------------------------------------------------- -->
+
+<div class="section">
+<h2>الشكل 1: Modern Card</h2>
+
+<div class="card-upload">
+    <div class="box" onclick="triggerFile('file1')">اضغط أو اسحب لرفع ملف</div>
+    <input type="file" id="file1" style="display:none" onchange="uploadFile(this.files[0], 1)">
+    
+    <div class="progress-bar-1" id="progressBar1">
+        <div class="progress-1" id="progress1"></div>
+    </div>
+
+    <p id="result1" style="margin-top:15px; display:none"></p>
+</div>
+
+</div>
+
+
+<!-- ------------------------------------------------------------- -->
+<!--  الشكل 2: Classic Minimal -->
+<!-- ------------------------------------------------------------- -->
+
+<div class="section">
+<h2>الشكل 2: شكل بسيط</h2>
+
+<div class="classic-upload">
+    اختر ملف:
+    <input type="file" id="file2" onchange="uploadFile(this.files[0], 2)">
+    <p id="result2" style="display:none; margin-top:10px;"></p>
+</div>
+
+</div>
+
+
+<!-- ------------------------------------------------------------- -->
+<!--  الشكل 3: Full Width Upload Bar -->
+<!-- ------------------------------------------------------------- -->
+
+<div class="section">
+<h2>الشكل 3: شريط رفع كامل</h2>
+
+<div class="bar-upload">
+    <input type="file" id="file3" onchange="uploadFile(this.files[0], 3)">
+    <button class="upload-btn" onclick="document.getElementById('file3').click()">اختر ملفًا للرفع</button>
+
+    <div class="progress-bar-2" id="progressBar3">
+        <div class="progress-2" id="progress3"></div>
+    </div>
+
+    <p id="result3" style="display:none; margin-top:15px;"></p>
+</div>
+
+</div>
+
+
+<!-- ------------------------------------------------------------- -->
+<!--  الشكل 4: Mini Upload Button -->
+<!-- ------------------------------------------------------------- -->
+
+<div class="section">
+<h2>الشكل 4: زر صغير (Mini)</h2>
+
+<div class="mini-upload">
+    <button onclick="document.getElementById('file4').click()">رفع ملف</button>
+    <input type="file" id="file4" style="display:none" onchange="uploadFile(this.files[0], 4)">
+    <p id="result4" style="margin-top:10px; display:none;"></p>
+</div>
+
+</div>
+
+
+
+<!-- ------------------------------------------------------------- -->
+<!--  JavaScript الموحد للرفع لجميع الأشكال -->
+<!-- ------------------------------------------------------------- -->
+
+<script>
+
+const API_URL = "http://localhost:8000/upload";   // ← عدّله لمسارك
+const API_KEY = "secret-api-key-123";             // ← المفتاح
+
+function triggerFile(id) {
+    document.getElementById(id).click();
+}
+
+function uploadFile(file, type) {
+    if (!file) return;
+
+    let formData = new FormData();
+    formData.append("file", file);
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", API_URL);
+    xhr.setRequestHeader("X-API-KEY", API_KEY);
+
+    // Progress handling
+    xhr.upload.addEventListener("progress", function (e) {
+        if (type === 1) {
+            document.getElementById("progressBar1").style.display = "block";
+            document.getElementById("progress1").style.width = (e.loaded / e.total) * 100 + "%";
+        } 
+        else if (type === 3) {
+            document.getElementById("progressBar3").style.display = "block";
+            document.getElementById("progress3").style.width = (e.loaded / e.total) * 100 + "%";
+        }
+    });
+
+    xhr.onload = function () {
+        let res = JSON.parse(xhr.responseText);
+
+        if (res.success) {
+            let result = document.getElementById("result" + type);
+            result.style.display = "block";
+            result.innerHTML = `✔ <a href="${res.url}" target="_blank">${res.url}</a>`;
+        } else {
+            alert("خطأ: " + res.error);
+        }
+    };
+
+    xhr.send(formData);
+}
+
+</script>
+
+</body>
+</html>

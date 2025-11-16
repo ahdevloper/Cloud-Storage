@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>نماذج رفع هندسية - Circular & Geometric Uploads</title>
+<style>
+  :root{
+    --bg:#f4f7fb;
+    --card:#fff;
+    --accent:#4A90E2;
+    --muted:#8893a3;
+    --success:#2e7d32;
+    --danger:#e53935;
+    --shadow: 0 8px 24px rgba(16,24,40,0.08);
+  }
+  body{
+    margin:0;
+    font-family: "Tajawal", Arial, sans-serif;
+    background:var(--bg);
+    color:#12202b;
+    padding:28px;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1{ text-align:center; margin-bottom:20px; font-size:20px; }
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+    gap:18px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+
+  /* common card */
+  .shape-card{
+    background:var(--card);
+    border-radius:16px;
+    padding:18px;
+    box-shadow:var(--shadow);
+    text-align:center;
+    position:relative;
+    overflow:visible;
+  }
+  .shape-title{ font-weight:600; margin-bottom:10px; color:#0f1720; }
+  .hint{ font-size:13px; color:var(--muted); margin-bottom:10px; }
+
+  /* --- shape containers --- */
+  .shape-wrap{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+  /* Circular */
+  .circle-drop{
+    width:120px; height:120px; border-radius:50%;
+    border:3px dashed rgba(74,144,226,0.25);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all .18s; position:relative;
+    background: linear-gradient(180deg, rgba(74,144,226,0.03), transparent);
+  }
+  .circle-drop:hover{ transform:translateY(-4px); box-shadow: 0 6px 18px rgba(74,144,226,0.08); }
+
+  /* Hexagon */
+  .hexagon{
+    width:130px; height:75px; position:relative; cursor:pointer;
+    background:linear-gradient(180deg, #fff, #f8fbff);
+    display:flex; align-items:center; justify-content:center;
+    border-radius:6px; border:2px solid rgba(74,144,226,0.12);
+    clip-path: polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0% 50%);
+  }
+
+  /* Diamond (rhombus) */
+  .diamond{
+    width:120px; height:120px; transform: rotate(45deg);
+    background: linear-gradient(180deg,#fff,#f3f7ff);
+    border:2px dashed rgba(74,144,226,0.14);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+  .diamond > *{ transform: rotate(-45deg); } /* rotate content back */
+
+  /* Triangle */
+  .triangle{
+    width:0; height:0;
+    border-left:65px solid transparent;
+    border-right:65px solid transparent;
+    border-bottom:115px solid rgba(74,144,226,0.12);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    position:relative;
+  }
+  .triangle .tri-inner{
+    position:absolute; top:36px; width:110px; text-align:center;
+    font-size:12px; color:#123;
+  }
+
+  /* Rounded square */
+  .rounded-square{
+    width:120px; height:120px; border-radius:18px;
+    border:2px solid rgba(74,144,226,0.14);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; background:linear-gradient(180deg,#fff,#fbfdff);
+  }
+
+  /* hidden file inputs */
+  input[type="file"]{ display:none; }
+
+  /* preview image small */
+  .preview-thumb{
+    width:72px; height:72px; object-fit:cover; border-radius:8px; border:1px solid #e6eefc;
+  }
+
+  /* controls area */
+  .controls{ display:flex; gap:8px; align-items:center; justify-content:center; margin-top:8px; }
+  .btn{
+    background:var(--accent); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-size:13px;
+  }
+  .btn.ghost{ background:transparent; color:var(--accent); border:1px solid rgba(74,144,226,0.14); }
+
+  .progress-wrap{ width:100%; height:8px; background:#eef3fb; border-radius:8px; overflow:hidden; margin-top:10px; display:none; }
+  .progress-bar{ height:100%; width:0%; background:var(--accent); transition:width .2s ease; }
+
+  .result-url{ font-size:13px; color:var(--accent); word-break:break-all; margin-top:8px; display:none; }
+  .msg{ font-size:13px; color:var(--muted); }
+
+  /* small utilities */
+  .copy-btn{ background:#0f1720; color:#fff; font-size:12px; padding:6px 8px; border-radius:6px; border:none; cursor:pointer; }
+  .success{ color:var(--success); font-weight:600; font-size:13px; }
+  .error{ color:var(--danger); font-weight:600; font-size:13px; }
+
+  /* responsive tweaks */
+  @media (max-width:640px){
+    .grid{ grid-template-columns: 1fr; }
+    .shape-card{ padding:14px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>نماذج رفع هندسية — دائري و أشكال متعددة</h1>
+<p style="text-align:center; color:var(--muted); margin-top:-8px;">كل شكل يتصل بنفس API — غيّر API_URL و API_KEY في أسفل الصفحة</p>
+
+<div class="grid">
+
+  <!-- Circular -->
+  <div class="shape-card">
+    <div class="shape-title">دائري — Circular</div>
+    <div class="hint">شكل ناعم ومركز مناسب للصور الشخصية</div>
+    <div class="shape-wrap">
+      <div class="circle-drop" id="c_drop" onclick="trigger('c_file')">
+        <svg width="46" height="46" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#4A90E2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <input type="file" id="c_file" accept="image/*" onchange="handleFile(this.files[0],'c')">
+      <div class="controls">
+        <button class="btn" onclick="trigger('c_file')">اختر ملف</button>
+        <button class="btn ghost" onclick="clearCard('c')">مسح</button>
+      </div>
+      <div class="progress-wrap" id="c_prog_wrap"><div class="progress-bar" id="c_prog"></div></div>
+      <img id="c_preview" class="preview-thumb" style="display:none" alt="preview"/>
+      <div class="result-url" id="c_url"></div>
+      <div class="msg" id="c_msg"></div>
+    </div>
+  </div>
+
+  <!-- Hexagon -->
+  <div class="shape-card">
+    <div class="shape-title">سداسي — Hexagon</div>
+    <div class="hint">تصميم أنيق للأقسام التقنية</div>
+    <div class="shape-wrap">
+      <div class="hexagon" id="h_drop" onclick="trigger('h_file')">
+        <div style="font-size:13px; color:#16405f">اسحب أو اضغط</div>
+      </div>
+      <input type="file" id="h_file" onchange="handleFile(this.files[0],'h')">
+      <div class="controls">
+        <button class="btn" onclick="trigger('h_file')">اختيار</button>
+        <button class="btn ghost" onclick="clearCard('h')">مسح</button>
+      </div>
+      <div class="progress-wrap" id="h_prog_wrap"><div class="progress-bar" id="h_prog"></div></div>
+      <div class="result-url" id="h_url"></div>
+      <div class="msg" id="h_msg"></div>
+    </div>
+  </div>
+
+  <!-- Diamond -->
+  <div class="shape-card">
+    <div class="shape-title">معين — Diamond</div>
+    <div class="hint">شكل مميز لأزرار CTA</div>
+    <div class="shape-wrap">
+      <div class="diamond" id="d_drop" onclick="trigger('d_file')">
+        <div style="font-weight:600; color:#16405f">رفع</div>
+      </div>
+      <input type="file" id="d_file" onchange="handleFile(this.files[0],'d')">
+      <div class="controls">
+        <button class="btn" onclick="trigger('d_file')">رفع ملف</button>
+        <button class="btn ghost" onclick="clearCard('d')">مسح</button>
+      </div>
+      <div class="progress-wrap" id="d_prog_wrap"><div class="progress-bar" id="d_prog"></div></div>
+      <img id="d_preview" class="preview-thumb" style="display:none" alt="preview"/>
+      <div class="result-url" id="d_url"></div>
+      <div class="msg" id="d_msg"></div>
+    </div>
+  </div>
+
+  <!-- Triangle -->
+  <div class="shape-card">
+    <div class="shape-title">مثلث — Triangle</div>
+    <div class="hint">خيار جريء لتصميمات نابضة</div>
+    <div class="shape-wrap">
+      <div class="triangle" id="t_drop" onclick="trigger('t_file')">
+        <div class="tri-inner">اسحب هنا</div>
+      </div>
+      <input type="file" id="t_file" onchange="handleFile(this.files[0],'t')">
+      <div class="controls">
+        <button class="btn" onclick="trigger('t_file')">اختر</button>
+        <button class="btn ghost" onclick="clearCard('t')">مسح</button>
+      </div>
+      <div class="progress-wrap" id="t_prog_wrap"><div class="progress-bar" id="t_prog"></div></div>
+      <div class="result-url" id="t_url"></div>
+      <div class="msg" id="t_msg"></div>
+    </div>
+  </div>
+
+  <!-- Rounded Square -->
+  <div class="shape-card">
+    <div class="shape-title">مربع دائري — Rounded</div>
+    <div class="hint">مناسب للأقسام العامة والملفات</div>
+    <div class="shape-wrap">
+      <div class="rounded-square" id="r_drop" onclick="trigger('r_file')">
+        <div style="text-align:center;">
+          <div style="font-weight:600">رفع</div>
+          <div style="font-size:11px;color:var(--muted)">دعم أي ملف</div>
+        </div>
+      </div>
+      <input type="file" id="r_file" onchange="handleFile(this.files[0],'r')">
+      <div class="controls">
+        <button class="btn" onclick="trigger('r_file')">اختيار ملف</button>
+        <button class="btn ghost" onclick="clearCard('r')">مسح</button>
+      </div>
+      <div class="progress-wrap" id="r_prog_wrap"><div class="progress-bar" id="r_prog"></div></div>
+      <div class="result-url" id="r_url"></div>
+      <div class="msg" id="r_msg"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- API settings -->
+<script>
+  // غيّر هذه القيم لتتصل بالـ API الخاص بك
+  const API_URL = "http://localhost:8000/upload"; // <- ضع رابط الرفع هنا
+  const API_KEY = "secret-api-key-123";          // <- ضع مفتاح الـ API هنا
+
+  // مساعدة بسيطة لتفعيل النقر
+  function trigger(id){ document.getElementById(id).click(); }
+
+  // تنظيف الكارد
+  function clearCard(prefix){
+    document.getElementById(prefix + "_preview")?.style && (document.getElementById(prefix + "_preview").style.display = "none");
+    document.getElementById(prefix + "_url").style.display = "none";
+    document.getElementById(prefix + "_msg").textContent = "";
+    document.getElementById(prefix + "_prog").style.width = "0%";
+    document.getElementById(prefix + "_prog_wrap").style.display = "none";
+  }
+
+  // دعم سحب وإفلات لكل عنصر
+  ['c','h','d','t','r'].forEach(prefix=>{
+    const dropEl = document.getElementById(prefix + '_drop');
+    ;['dragenter','dragover'].forEach(ev => dropEl.addEventListener(ev, e=>{ e.preventDefault(); dropEl.style.opacity=0.95; }));
+    ;['dragleave','drop'].forEach(ev => dropEl.addEventListener(ev, e=>{ e.preventDefault(); dropEl.style.opacity=1; }));
+    dropEl.addEventListener('drop', e=>{
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      handleFile(file, prefix);
+    });
+  });
+
+  // رفع الملف
+  function handleFile(file, prefix){
+    if(!file){ return; }
+    // قيود بسيطة
+    const maxMB = 50;
+    if(file.size > maxMB * 1024 * 1024){
+      setMsg(prefix, `حجم الملف أكبر من ${maxMB}MB`, 'error'); return;
+    }
+
+    // عرض معاينة إن كانت صورة
+    if(file.type.startsWith('image/')){
+      const img = document.getElementById(prefix + '_preview');
+      if(img){
+        img.src = URL.createObjectURL(file);
+        img.style.display = 'block';
+      }
+    }
+
+    // إعداد الطلب
+    const fd = new FormData();
+    fd.append('file', file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', API_URL, true);
+    xhr.setRequestHeader('X-API-KEY', API_KEY);
+
+    // progress
+    xhr.upload.addEventListener('progress', e=>{
+      if(e.lengthComputable){
+        const pct = Math.round((e.loaded / e.total) * 100);
+        const wrap = document.getElementById(prefix + '_prog_wrap');
+        const bar  = document.getElementById(prefix + '_prog');
+        wrap.style.display = 'block';
+        bar.style.width = pct + '%';
+      }
+    });
+
+    xhr.onload = ()=>{
+      try {
+        const res = JSON.parse(xhr.responseText);
+        if(res.success){
+          const urlEl = document.getElementById(prefix + '_url');
+          urlEl.textContent = res.url;
+          urlEl.style.display = 'block';
+          setMsg(prefix, 'تم الرفع بنجاح', 'success');
+          // إضافة زر نسخ بسيط
+          makeCopy(prefix, res.url);
+        } else {
+          setMsg(prefix, res.error || 'خطأ غير معروف', 'error');
+        }
+      } catch(err){
+        setMsg(prefix, 'فشل في معالجة الاستجابة', 'error');
+      }
+    };
+
+    xhr.onerror = ()=> setMsg(prefix, 'فشل الاتصال بالخادم', 'error');
+    xhr.send(fd);
+    setMsg(prefix, 'جارٍ الرفع...', 'muted');
+  }
+
+  function setMsg(prefix, text, type){
+    const el = document.getElementById(prefix + '_msg');
+    el.textContent = text;
+    el.className = 'msg ' + (type==='success'?'success': type==='error'?'error':'');
+  }
+
+  function makeCopy(prefix, url){
+    // إضافة زر نسخ مؤقت
+    const urlEl = document.getElementById(prefix + '_url');
+    // إزالة أي زر قديم
+    const old = document.getElementById(prefix + '_copybtn');
+    if(old) old.remove();
+    const btn = document.createElement('button');
+    btn.id = prefix + '_copybtn';
+    btn.className = 'copy-btn';
+    btn.innerText = 'نسخ الرابط';
+    btn.onclick = ()=>{
+      navigator.clipboard?.writeText(url).then(()=> alert('تم نسخ الرابط'));
+    };
+    urlEl.parentNode.insertBefore(btn, urlEl.nextSibling);
+  }
+</script>
+
+</body>
+</html>

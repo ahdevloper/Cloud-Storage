@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design 1 - Glassmorphism Upload</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .upload-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 50px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .drop-zone:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .drop-zone.dragover {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 60px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .drop-text {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .drop-subtext {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .progress-section {
+            margin-top: 25px;
+            display: none;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            transition: width 0.3s ease;
+        }
+
+        .link-section {
+            margin-top: 25px;
+            display: none;
+        }
+
+        .link-container {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .link-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .copy-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .file-info {
+            color: white;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h2 class="upload-title">رفع الملفات</h2>
+        
+        <div class="drop-zone" id="dropZone">
+            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+            <div class="drop-text">اسحب الملف هنا</div>
+            <div class="drop-subtext">أو انقر للاختيار من الجهاز</div>
+            <input type="file" class="file-input" id="fileInput">
+        </div>
+
+        <div class="progress-section" id="progressSection">
+            <div class="progress">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+            <div class="file-info" id="fileInfo"></div>
+        </div>
+
+        <div class="link-section" id="linkSection">
+            <div class="link-container">
+                <input type="text" class="link-input" id="linkInput" readonly>
+                <button class="copy-btn" id="copyBtn">
+                    <i class="fas fa-copy"></i> نسخ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const progressSection = document.getElementById('progressSection');
+        const progressBar = document.getElementById('progressBar');
+        const fileInfo = document.getElementById('fileInfo');
+        const linkSection = document.getElementById('linkSection');
+        const linkInput = document.getElementById('linkInput');
+        const copyBtn = document.getElementById('copyBtn');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFile(files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            fileInfo.textContent = `جاري رفع: ${file.name}`;
+            progressSection.style.display = 'block';
+            linkSection.style.display = 'none';
+
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        showDownloadLink(file.name);
+                    }, 500);
+                }
+            }, 200);
+        }
+
+        function showDownloadLink(fileName) {
+            const fakeLink = `https://cloud.example.com/files/${Date.now()}/${fileName}`;
+            linkInput.value = fakeLink;
+            linkSection.style.display = 'block';
+            fileInfo.textContent = 'تم الرفع بنجاح! ✓';
+        }
+
+        copyBtn.addEventListener('click', () => {
+            linkInput.select();
+            document.execCommand('copy');
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> تم النسخ';
+            setTimeout(() => {
+                copyBtn.innerHTML = '<i class="fas fa-copy"></i> نسخ';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

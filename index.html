@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>رفع الملفات – Cloud Storage</title>
+
+<style>
+    body {
+        font-family: "Tajawal", sans-serif;
+        background:#f5f5f5;
+        padding:40px;
+        text-align:center;
+    }
+
+    .upload-box {
+        width: 350px;
+        margin: auto;
+        padding: 30px;
+        border: 3px dashed #aaa;
+        border-radius: 15px;
+        background:white;
+        cursor:pointer;
+        transition: 0.3s;
+    }
+
+    .upload-box:hover {
+        border-color:#4CAF50;
+    }
+
+    #fileInput {
+        display:none;
+    }
+
+    .result {
+        margin-top:20px;
+        padding:15px;
+        background:#fff;
+        border-radius:10px;
+        display:none;
+        border:1px solid #ddd;
+    }
+
+    .link {
+        color:blue;
+        word-break:break-all;
+    }
+</style>
+</head>
+<body>
+
+<h2>رفع الملفات إلى التخزين السحابي</h2>
+
+<div class="upload-box" onclick="document.getElementById('fileInput').click()"
+     ondrop="dropHandler(event)" ondragover="dragOverHandler(event)">
+    اسحب الملف هنا أو اضغط للاختيار
+</div>
+
+<input type="file" id="fileInput">
+
+<div class="result" id="result">
+    <h3>تم رفع الملف بنجاح ✔</h3>
+    <div><strong>الرابط:</strong></div>
+    <a class="link" id="fileUrl" target="_blank"></a>
+</div>
+
+<script>
+    const API_URL = "http://localhost:8000/upload";   // <-- غيّره لمسارك الحقيقي
+    const API_KEY = "secret-api-key-123";             // <-- غيّر المفتاح
+
+    document.getElementById("fileInput").addEventListener("change", function() {
+        uploadFile(this.files[0]);
+    });
+
+    function dragOverHandler(e) {
+        e.preventDefault();
+    }
+
+    function dropHandler(e) {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        uploadFile(file);
+    }
+
+    function uploadFile(file) {
+        if (!file) return;
+
+        let formData = new FormData();
+        formData.append("file", file);
+
+        fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "X-API-KEY": API_KEY
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("result").style.display = "block";
+                document.getElementById("fileUrl").textContent = data.url;
+                document.getElementById("fileUrl").href = data.url;
+            } else {
+                alert("خطأ: " + data.error);
+            }
+        })
+        .catch(err => {
+            alert("فشل الاتصال بالخادم");
+        });
+    }
+</script>
+
+</body>
+</html>

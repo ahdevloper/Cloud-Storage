@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>نماذج رفع ملفات AI</title>
+<style>
+body {
+    font-family: "Tajawal", sans-serif;
+    background: #f4f7fb;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+h2 { margin-bottom: 15px; color: #0f1720; }
+
+/* ---------------------- تصميم 1: Minimal ---------------------- */
+.upload-minimal {
+    width: 300px; padding: 25px; border: 2px dashed #d8dce6;
+    border-radius: 14px; text-align: center; background: #fff;
+    cursor: pointer; transition: 0.2s;
+}
+.upload-minimal:hover { border-color: #4A90E2; background: #f9fbff; }
+.upload-minimal .icon { font-size: 36px; }
+.upload-minimal .title { font-weight: 600; margin: 5px 0; }
+.upload-minimal p { font-size: 13px; color: #777; }
+.upload-minimal input { display: none; }
+
+/* ---------------------- تصميم 2: Card Shadow ---------------------- */
+.upload-card {
+    width: 320px; padding: 20px; background:white; border-radius:18px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.07); text-align:center;
+}
+.upload-card .dropzone {
+    padding:25px; border:2px dashed #b4c1d3; border-radius:14px;
+    transition:.2s; cursor:pointer;
+}
+.upload-card .dropzone:hover { border-color:#4A90E2; background:#f3f7ff; }
+.upload-card .dropzone span { font-weight:600; }
+.upload-card .dropzone small { color:#777; display:block; margin-top:4px; }
+.upload-card input { display:none; }
+
+/* ---------------------- تصميم 3: Neon ---------------------- */
+.upload-neon {
+    width:300px; padding:25px; background:#0F172A; color:#E2E8F0;
+    border-radius:16px; position:relative; cursor:pointer; text-align:center;
+}
+.upload-neon:before{
+    content:""; position:absolute; inset:0;
+    border-radius:16px; padding:2px;
+    background:linear-gradient(45deg,#4A90E2,#8F6AF5);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+}
+.upload-neon p{ color:#94A3B8; font-size:13px; }
+.upload-neon input { display:none; }
+
+/* ---------------------- تصميم 4: Circle ---------------------- */
+.upload-circle{
+    width:150px; height:150px; border-radius:50%;
+    border:3px dashed #b8c5d8; display:flex;
+    justify-content:center; align-items:center;
+    flex-direction:column; text-align:center;
+    cursor:pointer; transition:.2s;
+}
+.upload-circle:hover{ border-color:#4A90E2; background:#f6f9ff; }
+.upload-circle .icon{ font-size:36px; }
+.upload-circle input{ display:none; }
+
+/* ---------------------- تصميم 5: Gradient ---------------------- */
+.upload-gradient{
+    width:280px; padding:25px; border-radius:20px;
+    text-align:center; cursor:pointer; 
+    background:linear-gradient(135deg,#4A90E2,#7F9AFD);
+    color:white; transition:.25s;
+}
+.upload-gradient:hover{ opacity:0.9; }
+.upload-gradient p{ font-size:13px; color:#f0f0f0; }
+.upload-gradient input{ display:none; }
+
+/* ---------------------- تصميم 6: Glassmorphism ---------------------- */
+.upload-glass{
+    width:300px; padding:25px; border-radius:18px;
+    text-align:center; cursor:pointer;
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.2);
+    color:white;
+}
+.upload-glass p{ font-size:13px; color:#d9e3ee; }
+.upload-glass input{ display:none; }
+
+/* ---------------------- عرض اسم الملف بعد الرفع ---------------------- */
+.upload-file-name {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #0f1720;
+}
+</style>
+</head>
+<body>
+
+<h1>نماذج واجهة رفع ملفات AI</h1>
+
+<!-- تصميم 1 -->
+<h2>Minimal Upload</h2>
+<div class="upload-minimal" onclick="triggerInput(this)">
+    <div class="icon">📤</div>
+    <div class="title">ارفع ملفك</div>
+    <p>اسحب الملف هنا أو اضغط للاختيار</p>
+    <input type="file" onchange="showFileName(this)">
+    <div class="upload-file-name"></div>
+</div>
+
+<!-- تصميم 2 -->
+<h2>Card Shadow Upload</h2>
+<div class="upload-card">
+    <div class="dropzone" onclick="triggerInput(this)">
+        <span>اسحب الملف هنا</span>
+        <small>أو اضغط للاختيار</small>
+        <input type="file" onchange="showFileName(this)">
+        <div class="upload-file-name"></div>
+    </div>
+</div>
+
+<!-- تصميم 3 -->
+<h2>Neon Upload</h2>
+<div class="upload-neon" onclick="triggerInput(this)">
+    <p>اسحب الملف أو اضغط هنا</p>
+    <input type="file" onchange="showFileName(this)">
+    <div class="upload-file-name"></div>
+</div>
+
+<!-- تصميم 4 -->
+<h2>Circle Upload</h2>
+<div class="upload-circle" onclick="triggerInput(this)">
+    <div class="icon">⬆️</div>
+    <div>اضغط للرفع</div>
+    <input type="file" onchange="showFileName(this)">
+    <div class="upload-file-name"></div>
+</div>
+
+<!-- تصميم 5 -->
+<h2>Gradient Upload</h2>
+<div class="upload-gradient" onclick="triggerInput(this)">
+    <p>اسحب الملف أو اضغط هنا</p>
+    <input type="file" onchange="showFileName(this)">
+    <div class="upload-file-name"></div>
+</div>
+
+<!-- تصميم 6 -->
+<h2>Glassmorphism Upload</h2>
+<div class="upload-glass" onclick="triggerInput(this)">
+    <p>اختر ملفاً من جهازك</p>
+    <input type="file" onchange="showFileName(this)">
+    <div class="upload-file-name"></div>
+</div>
+
+<script>
+function triggerInput(container){
+    const input = container.querySelector('input[type="file"]');
+    input.click();
+}
+
+function showFileName(input){
+    const fileNameDiv = input.parentElement.querySelector('.upload-file-name');
+    if(input.files.length > 0){
+        fileNameDiv.textContent = "تم اختيار الملف: " + input.files[0].name;
+    } else {
+        fileNameDiv.textContent = "";
+    }
+}
+</script>
+
+</body>
+</html>
